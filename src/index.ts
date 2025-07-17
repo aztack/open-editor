@@ -4,22 +4,48 @@ import {getEditor, defaultEditor} from 'env-editor';
 import {parseLineColumnPath, stringifyLineColumnPath} from 'line-column-path';
 import open from 'open';
 
-export function getEditorInfo(files, options = {}) {
+export interface Options {
+	/**
+	The editor to use.
+
+	By default, it will try to open the file in the following editors, in this order:
+	- Your default editor, if you have specified one.
+	- Visual Studio Code
+	- Visual Studio Code - Insiders
+	- Sublime Text
+	- Atom
+	- WebStorm
+	- TextMate
+	- Vim
+	- NeoVim
+	- IntelliJ IDEA
+	*/
+	readonly editor?: string;
+
+	/**
+	Wait for the editor to close.
+
+	@default false
+	*/
+	readonly wait?: boolean;
+}
+
+export function getEditorInfo(files: readonly string[], options: Options = {}) {
 	if (!Array.isArray(files)) {
 		throw new TypeError(`Expected an \`Array\`, got ${typeof files}`);
 	}
 
 	const editor = options.editor ? getEditor(options.editor) : defaultEditor();
-	const editorArguments = [];
+	const editorArguments: string[] = [];
 
-	if (['vscode', 'vscodium'].includes(editor.id)) {
+	if (['vscode', 'vscodium', 'cursor', 'trae', 'windsurf'].includes(editor.id)) {
 		editorArguments.push('--goto');
 	}
 
 	for (const file of files) {
 		const parsed = parseLineColumnPath(file);
 
-		if (['sublime', 'atom', 'zed', 'vscode', 'vscodium'].includes(editor.id)) {
+		if (['sublime', 'atom', 'zed', 'vscode', 'vscodium', 'cursor', 'trae', 'windsurf'].includes(editor.id)) {
 			editorArguments.push(stringifyLineColumnPath(parsed));
 
 			if (options.wait) {
@@ -74,7 +100,7 @@ export function getEditorInfo(files, options = {}) {
 	};
 }
 
-export default async function openEditor(files, options = {}) {
+export default async function openEditor(files: readonly string[], options: Options = {}) {
 	const result = getEditorInfo(files, options);
 	const stdio = result.isTerminalEditor ? 'inherit' : 'ignore';
 

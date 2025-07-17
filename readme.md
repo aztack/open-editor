@@ -9,6 +9,9 @@ Supports any editor, but only the following editors will open at a specific line
 - Zed
 - Visual Studio Code
 - VSCodium
+- Cursor
+- Trae
+- Windsurf
 - WebStorm*
 - TextMate
 - Vim
@@ -25,20 +28,20 @@ npm install open-editor
 
 ## Usage
 
+ESM:
+
 ```js
 import openEditor from 'open-editor';
 
-openEditor([
-	{
-		file: 'readme.md',
-		line: 10,
-		column: 2,
-	}
-]);
+openEditor(['unicorn.js:5:3']);
+```
 
-openEditor([
-	'unicorn.js:5:3',
-]);
+CommonJS:
+
+```js
+const openEditor = require('open-editor');
+
+openEditor(['unicorn.js:5:3']);
 ```
 
 ## API
@@ -49,37 +52,29 @@ Open the given files in the user's editor at specific line and column if support
 
 #### files
 
-Type: `Array<string | object>`
+Type: `string[]`
 
-Items should be in the format `foo.js:1:5` or `{file: 'foo.js', line: 1: column: 5}`.
+Items should be in the format `foo.js:1:5`.
 
 #### options
 
 Type: `object`
 
-##### wait
+```ts
+interface Options {
+	/**
+	The editor to use.
+	*/
+	readonly editor?: string;
 
-Type: `boolean`\
-Default: `false`
+	/**
+	Wait for the editor to close.
 
-Wait until the editor is closed.
-
-```js
-import openEditor from 'open-editor';
-
-await openEditor(['unicorn.js:5:3'], {wait: true});
-
-console.log('File was closed');
+	@default false
+	*/
+	readonly wait?: boolean;
+}
 ```
-
-##### editor
-
-Type: `string`\
-Default: [Auto-detected](https://github.com/sindresorhus/env-editor)
-
-The name, command, or binary path of the editor.
-
-**Only use this option if you really have to.** Can be useful if you want to force a specific editor or implement your own auto-detection.
 
 ### getEditorInfo(files, options?)
 
