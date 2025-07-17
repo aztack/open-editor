@@ -1,6 +1,6 @@
 {
 	"name": "open-editor2",
-	"version": "1.0.0-alpha.1",
+	"version": "1.0.0-alpha.2",
 	"description": "Open files in your editor at a specific line and column",
 	"license": "MIT",
 	"repository": "aztack/open-editor2",
