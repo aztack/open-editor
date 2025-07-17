@@ -1,14 +1,12 @@
 {
-	"name": "open-editor",
-	"version": "5.1.0",
+	"name": "open-editor2",
+	"version": "1.0.0-alpha.1",
 	"description": "Open files in your editor at a specific line and column",
 	"license": "MIT",
-	"repository": "sindresorhus/open-editor",
-	"funding": "https://github.com/sponsors/sindresorhus",
+	"repository": "aztack/open-editor2",
 	"author": {
-		"name": "Sindre Sorhus",
-		"email": "sindresorhus@gmail.com",
-		"url": "https://sindresorhus.com"
+		"name": "aztack",
+		"email": "aztack@163.com"
 	},
 	"type": "module",
 	"main": "./dist/index.cjs",

@@ -1,4 +1,8 @@
-# open-editor
+# open-editor2
+
+> This is a fork of [open-editor](https://github.com/sindresorhus/open-editor)
+> Add support for cjs+esm
+> Add support for Cursor, Trae, Windsurf
 
 > Open files in your editor at a specific line and column
 
