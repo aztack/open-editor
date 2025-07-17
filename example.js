@@ -1,6 +1,8 @@
-import openEditor from './index.js';
+import openEditor from './dist/index.js'
 
 openEditor([
-	'index.js:5:5',
+	'src/index.ts:5:5',
 	'package.json:10:10',
-]);
+], {
+	editor: 'trae'
+});
