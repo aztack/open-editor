@@ -1,4 +1,4 @@
-import process from 'node:process';
+import process from 'process';
 import {execa} from 'execa';
 import {getEditor, defaultEditor} from 'env-editor';
 import {parseLineColumnPath, stringifyLineColumnPath} from 'line-column-path';

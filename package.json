@@ -1,6 +1,6 @@
 {
 	"name": "open-editor2",
-	"version": "1.0.0-alpha.2",
+	"version": "1.0.0-alpha.3",
 	"description": "Open files in your editor at a specific line and column",
 	"license": "MIT",
 	"repository": "aztack/open-editor2",
@@ -22,9 +22,10 @@
 	},
 	"scripts": {
 		"prepublish": "npm run build",
-		"build": "tsup src/index.ts --format esm,cjs --dts",
-		"example": "bun example.js",
-		"test": "xo && ava && tsd"
+		"build": "npm run clean && node esbuild.js && npm run tsc",
+		"tsc": "tsc --esModuleInterop --declaration src/index.ts --emitDeclarationOnly --outDir ./dist",
+		"clean": "rimraf ./dist",
+		"example": "bun example.js"
 	},
 	"files": [
 		"dist"
@@ -63,11 +64,10 @@
 	"devDependencies": {
 		"@types/node": "^24.0.14",
 		"@types/ps-list": "^6.0.0",
-		"ava": "^6.1.3",
+		"esbuild": "^0.25.6",
+		"esbuild-plugin-replace": "^1.4.0",
 		"ps-list": "^8.1.1",
-		"tsd": "^0.31.1",
-		"tsup": "^8.5.0",
-		"typescript": "^5.8.3",
-		"xo": "^0.58.0"
+		"rimraf": "^6.0.1",
+		"typescript": "^5.8.3"
 	}
 }

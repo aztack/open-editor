@@ -1,4 +1,4 @@
-interface Options {
+export interface Options {
     /**
     The editor to use.
 
@@ -28,12 +28,12 @@ interface Options {
     */
     readonly fallback?: boolean;
 }
-declare function getEditorInfo(files: readonly string[], options?: Options): {
+export declare function getEditorInfo(files: readonly string[], options?: Options): {
     binary: string;
     arguments: string[];
     isTerminalEditor: boolean;
 };
-declare function openEditor(files: readonly string[], options?: Options): Promise<boolean>;
+export default function openEditor(files: readonly string[], options?: Options): Promise<boolean>;
 /**
  * Try to open files with editors
  * try retry with other editors if previous editor failed
@@ -41,6 +41,4 @@ declare function openEditor(files: readonly string[], options?: Options): Promis
  * @param editorOptions
  * @returns
  */
-declare function tryOpenEditor(files: string[], editorOptions: Options[]): Promise<boolean>;
-
-export { type Options, openEditor as default, getEditorInfo, tryOpenEditor };
+export declare function tryOpenEditor(files: string[], editorOptions: Options[]): Promise<boolean>;
