@@ -21,7 +21,9 @@
 		"node": ">=18"
 	},
 	"scripts": {
+		"prepublish": "npm run build",
 		"build": "tsup src/index.ts --format esm,cjs --dts",
+		"example": "bun example.js",
 		"test": "xo && ava && tsd"
 	},
 	"files": [
@@ -60,7 +62,9 @@
 	},
 	"devDependencies": {
 		"@types/node": "^24.0.14",
+		"@types/ps-list": "^6.0.0",
 		"ava": "^6.1.3",
+		"ps-list": "^8.1.1",
 		"tsd": "^0.31.1",
 		"tsup": "^8.5.0",
 		"typescript": "^5.8.3",

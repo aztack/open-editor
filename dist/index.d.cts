@@ -21,12 +21,26 @@ interface Options {
     @default false
     */
     readonly wait?: boolean;
+    /**
+    Fallback to system open command when editor fails.
+
+    @default true
+    */
+    readonly fallback?: boolean;
 }
 declare function getEditorInfo(files: readonly string[], options?: Options): {
     binary: string;
     arguments: string[];
     isTerminalEditor: boolean;
 };
-declare function openEditor(files: readonly string[], options?: Options): Promise<unknown>;
+declare function openEditor(files: readonly string[], options?: Options): Promise<boolean>;
+/**
+ * Try to open files with editors
+ * try retry with other editors if previous editor failed
+ * @param files
+ * @param editorOptions
+ * @returns
+ */
+declare function tryOpenEditor(files: string[], editorOptions: Options[]): Promise<boolean>;
 
-export { type Options, openEditor as default, getEditorInfo };
+export { type Options, openEditor as default, getEditorInfo, tryOpenEditor };

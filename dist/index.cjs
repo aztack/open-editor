@@ -31,7 +31,8 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 var index_exports = {};
 __export(index_exports, {
   default: () => openEditor,
-  getEditorInfo: () => getEditorInfo
+  getEditorInfo: () => getEditorInfo,
+  tryOpenEditor: () => tryOpenEditor
 });
 module.exports = __toCommonJS(index_exports);
 var import_node_process = __toESM(require("process"), 1);
@@ -93,33 +94,113 @@ function getEditorInfo(files, options = {}) {
   };
 }
 async function openEditor(files, options = {}) {
+  const { fallback = true } = options;
   const result = getEditorInfo(files, options);
   const stdio = result.isTerminalEditor ? "inherit" : "ignore";
-  const subprocess = (0, import_execa.execa)(result.binary, result.arguments, {
-    detached: true,
-    stdio
-  });
-  subprocess.on("error", () => {
-    const result2 = getEditorInfo(files, {
-      ...options,
-      editor: ""
+  try {
+    const subprocess = (0, import_execa.execa)(result.binary, result.arguments, {
+      detached: true,
+      stdio
     });
-    for (const file of result2.arguments) {
-      (0, import_open.default)(file);
+    await new Promise((resolve, reject) => {
+      let resolved = false;
+      const timeout = setTimeout(() => {
+        if (!resolved) {
+          resolved = true;
+          resolve(true);
+        }
+      }, 100);
+      subprocess.on("error", async (error) => {
+        if (!resolved) {
+          resolved = true;
+          clearTimeout(timeout);
+          if (fallback) {
+            for (const file of files) {
+              const parsed = (0, import_line_column_path.parseLineColumnPath)(file);
+              await (0, import_open.default)(parsed.file);
+            }
+            resolve(true);
+          } else {
+            reject(error);
+          }
+        }
+      });
+      subprocess.on("exit", async (code) => {
+        if (!resolved && code !== 0) {
+          resolved = true;
+          clearTimeout(timeout);
+          if (fallback) {
+            for (const file of files) {
+              const parsed = (0, import_line_column_path.parseLineColumnPath)(file);
+              await (0, import_open.default)(parsed.file);
+            }
+            resolve(true);
+          } else {
+            reject(new Error(`Editor exited with code ${code}`));
+          }
+        }
+      });
+    });
+    if (options.wait) {
+      return new Promise((resolve, reject) => {
+        subprocess.on("exit", (code) => {
+          if (code === 0) {
+            resolve(true);
+          } else if (fallback) {
+            files.forEach(async (file) => {
+              const parsed = (0, import_line_column_path.parseLineColumnPath)(file);
+              await (0, import_open.default)(parsed.file);
+            });
+            resolve(true);
+          } else {
+            reject(new Error(`Editor exited with code ${code}`));
+          }
+        });
+        subprocess.on("error", (error) => {
+          if (fallback) {
+            files.forEach(async (file) => {
+              const parsed = (0, import_line_column_path.parseLineColumnPath)(file);
+              await (0, import_open.default)(parsed.file);
+            });
+            resolve(true);
+          } else {
+            reject(error);
+          }
+        });
+      });
     }
-  });
-  if (options.wait) {
-    return new Promise((resolve) => {
-      subprocess.on("exit", resolve);
-    });
+    if (result.isTerminalEditor) {
+      subprocess.on("exit", import_node_process.default.exit);
+    } else {
+      subprocess.unref();
+    }
+    return true;
+  } catch (error) {
+    if (fallback) {
+      for (const file of files) {
+        const parsed = (0, import_line_column_path.parseLineColumnPath)(file);
+        await (0, import_open.default)(parsed.file);
+      }
+      return true;
+    } else {
+      throw error;
+    }
   }
-  if (result.isTerminalEditor) {
-    subprocess.on("exit", import_node_process.default.exit);
-  } else {
-    subprocess.unref();
+}
+async function tryOpenEditor(files, editorOptions) {
+  for (const editorOption of editorOptions) {
+    try {
+      const res = await openEditor(files, editorOption);
+      if (res) {
+        return true;
+      }
+    } catch (e) {
+    }
   }
+  return false;
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  getEditorInfo
+  getEditorInfo,
+  tryOpenEditor
 });
